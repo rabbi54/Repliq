@@ -2,7 +2,7 @@ from django.urls import path, include
 from asset.api_views import CompanyLoanSessionListAPIView
 from .models import *
 from .api_views import *
-
+from .views import *
 from rest_framework.routers import DefaultRouter
 
 
@@ -27,8 +27,11 @@ api_urls = [
 
 ]
 
+
+
 urlpatterns = [
-    path('api/', include(api_urls))
+    path('api/', include(api_urls)),
+    path('dashboard/', CompanyAssetListView.as_view(), name="dashboard"),
 ]
 
 urlpatterns+=router.urls

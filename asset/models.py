@@ -44,7 +44,7 @@ class Asset(models.Model):
         null=True, blank=True, help_text="External identifier.")
     invoice = models.FileField(null=True, blank=True)
     warranty = models.FileField(null=True, blank=True)
-    purchased_at = models.DateTimeField()
+    purchased_at = models.DateTimeField(null=True)
 
     current_holder = models.ForeignKey(
         Employee, on_delete=models.PROTECT, null=True, blank=True, related_name="get_associated_assets"

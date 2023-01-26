@@ -1,0 +1,98 @@
+{% extends 'partials/base.html' %}
+{% block custom_style %}
+<style>
+    img {
+        border: 2px solid #C0C0C0;
+        padding: 5px;
+    }
+</style>
+{% endblock %}
+{% block title %}Products Page{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row my-4">
+    <div class="col-md-4">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        <div class="card card-body">
+            <h5>Add New Asset</h5>
+            <hr>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input class="btn btn-success btn-block" type="submit" value="Add">
+            </form>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <table class="table bg-white">
+            <thead class="bg-info text-white">
+                <tr>
+                    <th scope='col'>Brand</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Serial No</th>
+                    <th scope="col">Inventory No</th>
+                    <th scope="col">Purchased At</th>
+                    <th scope="col">Is Avaiable </th>
+                    <th scope="col">Current Holder</th>
+                    <th scope="col">View Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in assets %}
+                <tr>
+                    <td> {{ a.brand.name }}</td>
+                    <td>{{ a.model }}</td>
+                    <td>{{ a.name }}</td>
+                    <td>{{ a.serial_no }}</td>
+                    <td>{{ a.inventory_no }}</td>
+                    <td>{{ a.purchased_at }}</td>
+                    <td>{{ a.current_holder }}</td>
+                    <td>
+                        {% if a.is_available %}
+                            <span class="badge badge-success text-white"> Yes</span>
+                        {%else%}
+                            <span class="badge badge-danger text-white"> No </span> 
+                        {%endif%}   
+                    </td>
+                   
+                    <td>
+                        <a class="btn btn-info btn-sm ml-2"
+                            href="#">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class='pagination justify-content-center'>
+            {% if product.has_previous %}
+              <a href='{% url "dashboard-inventory"%}?page={{product.previous_page_number}}'>Previous </a>
+            {% endif %}
+        
+            <span class='mx-4'>
+              Page {{ product.number }} of {{ product.paginator.num_pages }}
+            </span>
+            
+            {% if product.has_next %}
+              <a href='{% url "dashboard-inventory" %}?page={{product.next_page_number}}'> Next</a>
+            {% endif %}
+          </div>
+        </div>
+    </div>
+    
+{% endblock %}
+
+{% block custom_script %}
+  <script>
+    $(function () {
+      $("#datetimepicker1").datepicker();
+    });
+  </script>
+{% endblock %}
