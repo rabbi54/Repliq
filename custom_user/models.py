@@ -58,7 +58,7 @@ class Employee(models.Model):
         max_length=80, help_text="Employee ID assigned by the company"
     )
     company = models.ForeignKey(
-        Company, on_delete=models.CASCADE, related_name="get_associated_company"
+        Company, on_delete=models.PROTECT, related_name="get_associated_company"
     )
     is_company_admin = models.BooleanField()
     in_service = models.BooleanField()
