@@ -17,3 +17,12 @@ class AssetPartialForm(forms.ModelForm):
             'identifier'
         ]
 
+
+class AssetForm(forms.ModelForm):
+    class Meta:
+        model = Asset
+        exclude = [
+            'is_avaiable',
+            'current_holder'
+        ]
+

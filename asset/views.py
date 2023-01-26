@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
-from django.views.generic import ListView
+from django.views.generic import ListView, FormView, UpdateView
 from django.views.generic.edit import FormMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
+from asset.forms import *
 from custom_user.permissions import IsCompanyAdmin
 from .models import *
 from django.contrib import messages
-from .forms import *
 from django.utils import timezone
-
+from django.urls.base import reverse_lazy
 # Create your views here.
 
 
@@ -40,3 +40,11 @@ class CompanyAssetListView(ListView, LoginRequiredMixin, IsCompanyAdmin):
         context = super().get_context_data(**kwargs)
         context['form']=AssetPartialForm()
         return context
+
+
+
+class AssetUpdateView(UpdateView, LoginRequiredMixin, IsCompanyAdmin):
+    form_class=AssetForm
+    template = 'asset/asset_form.html'
+    model = Asset
+    success_url = reverse_lazy('dashboard')

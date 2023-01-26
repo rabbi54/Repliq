@@ -32,6 +32,7 @@ api_urls = [
 urlpatterns = [
     path('api/', include(api_urls)),
     path('dashboard/', CompanyAssetListView.as_view(), name="dashboard"),
+    path('asset-update/<int:pk>/',AssetUpdateView.as_view(), name="asset-update"),
 ]
 
 urlpatterns+=router.urls
