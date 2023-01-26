@@ -48,10 +48,10 @@ class CustomUser(AbstractUser):
 
 
 class Employee(models.Model):
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         CustomUser, 
         on_delete=models.PROTECT,
-        related_name="get_employee_details"
+        related_name="employee"
         )
     department = models.CharField(max_length=40)
     employee_id = models.CharField(
@@ -77,7 +77,7 @@ class Employee(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.user.first_name} | ID: {self.pk}"
+        return f"{self.user.email} | ID: {self.pk}"
 
     class Meta:
         unique_together = ["employee_id", "company"]

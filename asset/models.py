@@ -16,6 +16,9 @@ class Brand(models.Model):
     def get_assets(self):
         return self.asset_set.filter(brand=self)
 
+    def __str__(self) -> str:
+        return f"{self.name}"
+
 
 class Asset(models.Model):
     brand = models.ForeignKey(
@@ -65,7 +68,8 @@ class Asset(models.Model):
         return self.assetloansession_set.latest("started_at")
 
     
-
+    def __str__(self) -> str:
+        return f"{self.name} | {self.brand} | {self.company.name}"
 
 
 class AssetLoanSession(models.Model):
