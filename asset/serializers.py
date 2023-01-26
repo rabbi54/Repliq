@@ -14,6 +14,11 @@ class AssetSerializer(serializers.ModelSerializer):
         model = Asset
         fields = "__all__"
 
+        read_only_fields = [
+            'company',
+            "current_holder",
+        ]
+
 
 
 class AssetLoanSessionSerializer(serializers.ModelSerializer):
