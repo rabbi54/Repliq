@@ -1,0 +1,17 @@
+{% extends 'partials/base.html' %}
+{% block title %}Adding Employee{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row my-4">
+    <div class="col-md-6 offset-md-3 p-3  teal lighten-5 shadow p-3 mb-5 bg-white rounded justify-content-center">
+        <h3>Add New Employee</h3>
+        <hr>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input class="btn btn-info" type="submit" value="Confirm">
+        </form>
+    </div>
+</div>
+{% endblock %}

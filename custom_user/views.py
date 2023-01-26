@@ -6,6 +6,16 @@ from rest_framework import response, status
 from rest_framework.authtoken.models import Token
 
 from .forms import *
+
+
+
+from django.views.generic import ListView, FormView, UpdateView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from custom_user.permissions import IsCompanyAdmin
+from .models import *
+from django.contrib import messages
+from django.utils import timezone
+from django.urls.base import reverse_lazy
 # Create your views here.
 
 
@@ -45,3 +55,10 @@ def register(request):
         'form': form
     }
     return render(request, 'user/register.html', context)
+
+
+
+class AddEmployee(LoginRequiredMixin, CreateView, IsCompanyAdmin):
+    form_class = EmployeeForm
+    success_url = reverse_lazy("dashboard")
+    model = Employee
