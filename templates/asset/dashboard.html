@@ -20,7 +20,7 @@
         </div>
         {% endfor %}
         {% endif %}
-        <div class="card card-body">
+        <div class="card card-body shadow p-3 mb-5 bg-white rounded justify-content-center">
             <h5>Add New Asset</h5>
             <hr>
             <form method="POST" enctype="multipart/form-data">
@@ -30,8 +30,8 @@
             </form>
         </div>
     </div>
-    <div class="col-md-8">
-        <table class="table bg-white">
+    <div class="col-md-8 ">
+        <table class="table bg-white shadow p-3 mb-5 bg-white rounded justify-content-center">
             <thead class="bg-info text-white">
                 <tr>
                     <th scope='col'>Brand</th>
@@ -40,8 +40,8 @@
                     <th scope="col">Serial No</th>
                     <th scope="col">Inventory No</th>
                     <th scope="col">Purchased At</th>
-                    <th scope="col">Is Avaiable </th>
                     <th scope="col">Current Holder</th>
+                    <th scope="col">Is Avaiable </th>
                     <th scope="col">View Details</th>
                 </tr>
             </thead>
@@ -71,19 +71,19 @@
                 {% endfor %}
             </tbody>
         </table>
-        <div class='pagination justify-content-center'>
-            {% if product.has_previous %}
-              <a href='{% url "dashboard-inventory"%}?page={{product.previous_page_number}}'>Previous </a>
-            {% endif %}
-        
-            <span class='mx-4'>
-              Page {{ product.number }} of {{ product.paginator.num_pages }}
+        <div class="pagination justify-content-center">
+            <span class="step-links">
+              {% if page_obj.has_previous %}
+              <a href="" data-id="{{ page_obj.previous_page_number }}"><b>Prev</b></a>
+              {% endif %}
+              <span class="current">
+                Page {{ page_obj.number }} of {{ paginator.num_pages }}
+              </span>
+    
+              {% if page_obj.has_next %}
+              <a href="" data-id="{{ page_obj.next_page_number }}"><b>Next</b></a>
+              {% endif %}
             </span>
-            
-            {% if product.has_next %}
-              <a href='{% url "dashboard-inventory" %}?page={{product.next_page_number}}'> Next</a>
-            {% endif %}
-          </div>
         </div>
     </div>
     

@@ -9,6 +9,9 @@ from django.contrib import messages
 from django.utils import timezone
 from django.urls.base import reverse_lazy
 from datetime import timedelta
+from rest_framework.views import APIView
+from rest_framework import status, response
+from django.conf import settings
 # Create your views here.
 
 
@@ -67,5 +70,53 @@ class AssignAssetView(CreateView, LoginRequiredMixin, IsCompanyAdmin):
         self.object = form.save()
         self.object.supervisor=self.request.user.employee
         self.object.expires_at = timezone.now() + timedelta(days=30)
+
+        self.object.asset.is_available = False
+        self.object.asset.current_holder = form.cleaned_data['employee']
+
+        self.object.asset.save()
         self.object.save()
         return super().form_valid(form)
+
+
+
+class LoanListView(ListView, LoginRequiredMixin, IsCompanyAdmin):
+    model = AssetLoanSession
+    template_name = 'asset/loan_list.html'
+    context_object_name = "loans"
+    
+    def get_queryset(self):
+
+        print(settings.STATIC_URL)
+        print(settings.STATIC_ROOT)
+        queryset = AssetLoanSession.objects.filter(
+            asset__company = self.request.user.employee.company
+        )
+        return queryset
+    
+
+
+class ReturnAsset(APIView, LoginRequiredMixin, IsCompanyAdmin):
+    def post(self, request, format=None):
+        try:
+            loan_id = request.data.get("id").strip()
+            try:
+                loan = AssetLoanSession.objects.get(pk=loan_id)
+                loan.returned_at = timezone.now()
+
+                loan.asset.is_available = True
+                loan.asset.current_holder = None
+                loan.asset.save()
+                loan.save()
+                return response.Response(
+                    status=status.HTTP_200_OK, data={"success": "Returned successfully"}
+                )
+            except AssetLoanSession.DoesNotExist:
+                return response.Response(
+                    status=status.HTTP_400_BAD_REQUEST,
+                    data={"error": "Loan not found"},
+                )
+        except KeyError:
+            return response.Response(
+                status=status.HTTP_400_BAD_REQUEST, data={"error": "Argument not found"}
+            )

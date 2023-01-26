@@ -1,0 +1,109 @@
+{% extends 'partials/base.html' %}
+{% block custom_style %}
+<style>
+    img {
+        border: 2px solid #C0C0C0;
+        padding: 5px;
+    }
+</style>
+{% endblock %}
+{% block title %}Loans Page{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="row my-4">
+    <div class="card card-body mx-auto shadow p-3 mb-5 bg-white rounded justify-content-center">
+        <div class="card-title">
+            <h5>All loans</h5>
+        </div>
+<div>
+<div class="row my-4">
+   
+    
+    <table class="table bg-white">
+        <thead class="bg-info text-white">
+            <tr>
+                <th scope='col'>Asset</th>
+                <th scope="col">Taken By</th>
+                <th scope="col">Super Visor</th>
+                <th scope="col">Remarks</th>
+                <th scope="col">Contract</th>
+                <th scope="col">Started At</th>
+                <th scope="col">Expires At </th>
+                <th scope="col">Returned At</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in loans %}
+            <tr>
+                <td> {{ a.asset.model }} {{a.asset.name }}</td>
+                <td>{{ a.employee.user.username }}</td>
+                <td>{{ a.supervisor.user.username }}</td>
+                <td>{{ a.remarks }}</td>
+                {% if a.contract %}
+                    <td> <a href="{{ a.contract.url }}"> Download </a></td>
+                {% else %}
+                <td>{{ a.contract }}</td>
+                {%endif%}
+                <td>{{ a.started_at }}</td>
+                <td>{{ a.expires_at }}</td>
+                <td>{{a.returned_at}}</td>
+                <td>
+                    {% if a.returned_at %}
+                    <span class="badge badge-info text-white"> Returned </span> 
+                    {%else%}
+                    <button data-action="return" data-id={{a.pk}} class="btn btn-info btn-sm ml-2"
+                    >Return Now</button>
+                    {%endif%}   
+                </td>
+            
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination justify-content-center">
+        <span class="step-links">
+          {% if page_obj.has_previous %}
+          <a href="" data-id="{{ page_obj.previous_page_number }}"><b>Prev</b></a>
+          {% endif %}
+          <span class="current">
+            Page {{ page_obj.number }} of {{ paginator.num_pages }}
+          </span>
+
+          {% if page_obj.has_next %}
+          <a href="" data-id="{{ page_obj.next_page_number }}"><b>Next</b></a>
+          {% endif %}
+        </span>
+      </div>
+
+{% endblock %}
+
+{% block custom_script %}
+
+  <script>
+    $(document).ready(() => {
+    $('button[data-action=return]').click(
+        function () {
+            console.log("Hello")
+            const postdata = new PostData();
+            let url = '{% url "loan_returned" %}'
+            postdata.alert_message = "Did employee return the asset?";
+            let data = {
+                csrfmiddlewaretoken: '{{csrf_token}}',
+                id: $(this).data("id"),
+            }
+            let current_row = $(this).parents("tr");
+            let up = current_row.find('td').eq(8);
+            postdata.postSuccessTask = (response) => {
+                postdata.postSuccessSwalALert(response);
+                up.append('<span class="badge badge-info text-white"> Returned </span>')
+                $(this).remove();
+            }
+            postdata.postWithSwal(url, data);
+            
+        });
+        });
+    </script>
+{% endblock %}

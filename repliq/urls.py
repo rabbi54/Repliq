@@ -27,9 +27,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("api-token-auth/", views.obtain_auth_token),
     path("auth/", include("custom_user.urls")),
-    path("asset/", include("asset.urls")),
+    path("", include("asset.urls")),
     path('api/documentation/', schema_view),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
+# ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
 urlpatterns += static(
