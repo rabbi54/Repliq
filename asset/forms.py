@@ -26,3 +26,25 @@ class AssetForm(forms.ModelForm):
             'current_holder'
         ]
 
+
+class LoanSessionForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        print(kwargs)
+        super().__init__(*args, **kwargs)
+
+        self.fields['employee'].queryset=Employee.objects.filter(company=user.employee.company)
+
+        self.fields['asset'].queryset=Asset.objects.filter(company=user.employee.company, is_available=True)
+        
+
+    class Meta:
+        model = AssetLoanSession
+        fields = [
+            "employee",
+            "asset",
+            "remarks",
+            "note",
+            "contract",
+        ]

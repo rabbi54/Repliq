@@ -91,7 +91,8 @@ class AssetLoanSession(models.Model):
 
     supervisor = models.ForeignKey(Employee,
         related_name="get_asset_loans_supervised",
-        on_delete=models.SET(getSentinelUser)
+        on_delete=models.SET(getSentinelUser),
+        null=True,
         )
     asset = models.ForeignKey(Asset,
         on_delete=models.CASCADE,
