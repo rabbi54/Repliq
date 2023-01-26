@@ -13,6 +13,7 @@ class InStockAssetListAPIView(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
     serializer_class = AssetSerializer
     
+    # only available asset are beign showed of the company
     def get_queryset(self):
         return Asset.objects.filter(company=self.request.user.employee.company, is_available=True)
 
@@ -23,6 +24,7 @@ class NotInStockAssetListAPIView(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
     serializer_class = AssetSerializer
     
+    # only not available asset are beign showed of the company
     def get_queryset(self):
         return Asset.objects.filter(company=self.request.user.employee.company, is_available=False)
 
@@ -32,6 +34,7 @@ class CompanyLoanSessionListAPIView(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
     serializer_class = AssetLoanSessionSerializer
     
+    # all the asset are beign showed of the company
     def get_queryset(self):
         return AssetLoanSession.objects.filter(asset__company=self.request.user.employee.company)
 
@@ -41,6 +44,7 @@ class AssetLoanSessionListAPIView(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
     serializer_class = AssetLoanSessionSerializer
     
+    # list of all loans of a particular asset
     def get_queryset(self):
         pk = self.request.parser_context['kwargs']['pk']
         return AssetLoanSession.objects.filter(asset__company=self.request.user.employee.company, asset=pk)
@@ -52,6 +56,7 @@ class AssetCreateAPIView(generics.CreateAPIView):
     permission_classes = [IsCompanyAdmin]
     authentication_classes = [TokenAuthentication]
     
+    # lcreates an asset
     def perform_create(self, serializer):
         return serializer.save(
             company = self.request.user.employee.company
@@ -63,6 +68,7 @@ class EmployeeLoanSessionListAPIView(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
     serializer_class = AssetLoanSessionSerializer
     
+    # list of all loans of a particular employee
     def get_queryset(self):
         pk = self.request.parser_context['kwargs']['pk']
         return AssetLoanSession.objects.filter(asset__company=self.request.user.employee.company, employee=pk)
@@ -80,6 +86,9 @@ class AssetViewSet(viewsets.ModelViewSet):
 
 
 class AssignAssetView(generics.CreateAPIView):
+    """
+        provide a load to an employee
+    """
     permission_classes = [IsCompanyAdmin]
     authentication_classes = [TokenAuthentication]
     serializer_class = AssetLoanSessionSerializer
@@ -132,6 +141,9 @@ class AssignAssetView(generics.CreateAPIView):
 
 
 class ReturnAssetView(generics.UpdateAPIView):
+    """
+        employee returns the asset to company
+    """
     permission_classes = [IsCompanyAdmin]
     authentication_classes = [TokenAuthentication]
     serializer_class = AssetLoanSessionSerializer

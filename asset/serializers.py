@@ -3,10 +3,12 @@ from .models import *
 from custom_user.serializers import *
 
 class AssetSerializer(serializers.ModelSerializer):
+    # show only brand name
     brand = serializers.SlugRelatedField(
         read_only=True,
         slug_field = 'name'
     )
+    # company serializer provides add the fildes
     company = CompanySerializer()
     current_holder = EmployeeSerializer()
 

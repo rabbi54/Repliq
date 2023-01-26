@@ -20,6 +20,11 @@ from django.contrib.auth.models import AnonymousUser
 
 
 class CompanyAssetListView(LoginRequiredMixin, IsCompanyAdmin, ListView):
+    """
+        Provides a form to create an asset and shows all the asset of the company
+        If user is not logged in redirect to log in page
+    
+    """
     model = Asset
     template_name = 'asset/dashboard.html'
     context_object_name = "assets"
@@ -53,6 +58,7 @@ class CompanyAssetListView(LoginRequiredMixin, IsCompanyAdmin, ListView):
 
 
 class AssetUpdateView(LoginRequiredMixin, IsCompanyAdmin, UpdateView):
+    # to update an asset
     form_class=AssetForm
     template = 'asset/asset_form.html'
     model = Asset
@@ -66,16 +72,20 @@ class AssignAssetView( LoginRequiredMixin, IsCompanyAdmin,CreateView):
 
 
     def get_form_kwargs(self):
-        """Return the keyword arguments for instantiating the form."""
+        """Provides user info to filter out compnay related info."""
         kwargs = super().get_form_kwargs()
         kwargs.update({"user": self.request.user})
         return kwargs
 
     def form_valid(self, form):
         self.object = form.save()
+        # supervisor is the current company admin
         self.object.supervisor=self.request.user.employee
+        # loan will expire after 30 days
         self.object.expires_at = timezone.now() + timedelta(days=30)
 
+
+        # as the asset is now holding a user it is not available
         self.object.asset.is_available = False
         self.object.asset.current_holder = form.cleaned_data['employee']
 
@@ -91,9 +101,6 @@ class LoanListView(LoginRequiredMixin, IsCompanyAdmin,ListView):
     context_object_name = "loans"
     
     def get_queryset(self):
-
-        print(settings.STATIC_URL)
-        print(settings.STATIC_ROOT)
         queryset = AssetLoanSession.objects.filter(
             asset__company = self.request.user.employee.company
         )
@@ -107,8 +114,9 @@ class ReturnAsset(LoginRequiredMixin, IsCompanyAdmin,APIView):
             loan_id = request.data.get("id").strip()
             try:
                 loan = AssetLoanSession.objects.get(pk=loan_id)
+                # user returend the asset
                 loan.returned_at = timezone.now()
-
+                # so the asset is now available
                 loan.asset.is_available = True
                 loan.asset.current_holder = None
                 loan.asset.save()

@@ -4,7 +4,9 @@ from .models import *
 
 
 class AssetPartialForm(forms.ModelForm):
-
+    """
+        Partial Form to create an asset
+    """
     class Meta:
         model = Asset
         fields = [
@@ -19,6 +21,10 @@ class AssetPartialForm(forms.ModelForm):
 
 
 class AssetForm(forms.ModelForm):
+
+    """
+        To update an asset requiered form
+    """
     class Meta:
         model = Asset
         exclude = [
@@ -29,6 +35,7 @@ class AssetForm(forms.ModelForm):
 
 class LoanSessionForm(forms.ModelForm):
 
+    # filter out other company employees and assets
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
         print(kwargs)
