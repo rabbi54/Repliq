@@ -12,19 +12,24 @@ from datetime import timedelta
 from rest_framework.views import APIView
 from rest_framework import status, response
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
+
 # Create your views here.
 
 
 
 
-class CompanyAssetListView(ListView, LoginRequiredMixin, IsCompanyAdmin):
+class CompanyAssetListView(LoginRequiredMixin, IsCompanyAdmin, ListView):
     model = Asset
     template_name = 'asset/dashboard.html'
     context_object_name = "assets"
+
     def get_queryset(self):
-        queryset = Asset.objects.filter(
-            company = self.request.user.employee.company
-        )
+        queryset = Asset.objects.none()
+        if self.request.user.is_authenticated:
+            queryset = Asset.objects.filter(
+                company = self.request.user.employee.company
+            )
         return queryset
     
 
@@ -47,14 +52,14 @@ class CompanyAssetListView(ListView, LoginRequiredMixin, IsCompanyAdmin):
 
 
 
-class AssetUpdateView(UpdateView, LoginRequiredMixin, IsCompanyAdmin):
+class AssetUpdateView(LoginRequiredMixin, IsCompanyAdmin, UpdateView):
     form_class=AssetForm
     template = 'asset/asset_form.html'
     model = Asset
     success_url = reverse_lazy('dashboard')
 
 
-class AssignAssetView(CreateView, LoginRequiredMixin, IsCompanyAdmin):
+class AssignAssetView( LoginRequiredMixin, IsCompanyAdmin,CreateView):
     form_class = LoanSessionForm
     model = AssetLoanSession
     success_url = reverse_lazy('dashboard')
@@ -80,7 +85,7 @@ class AssignAssetView(CreateView, LoginRequiredMixin, IsCompanyAdmin):
 
 
 
-class LoanListView(ListView, LoginRequiredMixin, IsCompanyAdmin):
+class LoanListView(LoginRequiredMixin, IsCompanyAdmin,ListView):
     model = AssetLoanSession
     template_name = 'asset/loan_list.html'
     context_object_name = "loans"
@@ -96,7 +101,7 @@ class LoanListView(ListView, LoginRequiredMixin, IsCompanyAdmin):
     
 
 
-class ReturnAsset(APIView, LoginRequiredMixin, IsCompanyAdmin):
+class ReturnAsset(LoginRequiredMixin, IsCompanyAdmin,APIView):
     def post(self, request, format=None):
         try:
             loan_id = request.data.get("id").strip()
