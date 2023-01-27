@@ -11,7 +11,7 @@ from .forms import *
 
 from django.views.generic import ListView, FormView, UpdateView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from custom_user.permissions import IsCompanyAdmin
+from custom_user.permissions import CompanyAdminTest
 from .models import *
 from django.contrib import messages
 from django.utils import timezone
@@ -58,7 +58,7 @@ def register(request):
 
 
 
-class AddEmployee(LoginRequiredMixin, CreateView, IsCompanyAdmin):
+class AddEmployee(LoginRequiredMixin, CreateView, CompanyAdminTest):
     form_class = EmployeeForm
     success_url = reverse_lazy("dashboard")
     model = Employee
